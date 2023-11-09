@@ -4,7 +4,8 @@ import { useState } from 'react'
 function DictForm()
 {
     const [word, setWord] = useState('');
-    const [apiData, setAPIData] = useState([]);
+    const [phonetics, setPhonetic] = useState([]);
+    const [meanings, setMeanings] = useState([]);
 
     const handleSubmit = async (evnt) =>
     {
@@ -21,7 +22,10 @@ function DictForm()
             }
 
             const data = await resp.json();
-            setAPIData(data);
+            console.log(data);
+
+            setPhonetic(data[0].phonetics);
+            setMeanings(data[0].meanings);
 
         } 
         catch (error) 
@@ -38,14 +42,15 @@ function DictForm()
                 <button type='submit'> Search </button>
             </form>
             
-            {(apiData.length > 0) && (
+            {(meanings.length > 0) && (
                 <>
                     <h2>API RESPONCE</h2>
 
                     <ul>
+
                         <li>
                             <ul>
-                                {apiData[0].meanings.map((entry, index) => (
+                                {meanings.map((entry, index) => (
                                     <div key={index}>
                                         <h3> {entry.partOfSpeech} </h3>
                                         <ul>
@@ -58,9 +63,17 @@ function DictForm()
                             </ul>
                         </li>
 
-                        <li>{apiData[0].phonetic}</li>
+                        <li> 
+                            { phonetics[0].text } 
+                        </li>
                         
-                        <li></li>
+                        <li>
+                            <audio controls>
+                                <source src={phonetics[0].audio} type='audio/mpeg' ></source>
+                                Your browser does not support the audio element.
+                            </audio>
+                        </li>
+
                     </ul>
                 </>
             )}
