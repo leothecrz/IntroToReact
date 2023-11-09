@@ -1,6 +1,34 @@
 
 import { useState } from 'react'
 
+function AudioBlock( {source} )
+{
+    return (
+        <audio controls>
+            <source src={source} type='audio/mpeg' ></source>
+            Your browser does not support the audio element.
+        </audio>
+    );
+}
+
+function DefBlock( {defs} )
+{
+    return (
+        <ul>
+        {defs.map((entry, index) => (
+            <li key={index}>
+                <h3> {entry.partOfSpeech} </h3>
+                <ul>
+                    {entry.definitions.map((def, dex) => (
+                        <li className='defList'  key={dex} > {def.definition} </li>
+                    ))}
+                </ul>
+            </li>
+        ))}
+        </ul>
+    );
+}
+
 function DictForm()
 {
     const [word, setWord] = useState('');
@@ -22,8 +50,6 @@ function DictForm()
             }
 
             const data = await resp.json();
-            console.log(data);
-
             setPhonetic(data[0].phonetics);
             setMeanings(data[0].meanings);
 
@@ -31,53 +57,30 @@ function DictForm()
         catch (error) 
         {
             console.error('Error fetching dictionary definition. Error: ', error);
+            alert("Definition Could not be fetched. Unknow Word")
         }
 
     }
 
     return (
         <>
-            <form onSubmit={handleSubmit}>
+            <form className='apiForm' onSubmit={handleSubmit}>
                 <input type="text" value={word} onChange={(e) => setWord(e.target.value)} placeholde='Enter A Word ...'></input>
                 <button type='submit'> Search </button>
             </form>
             
             {(meanings.length > 0) && (
-                <>
+                <div className='apiRespoce' >
                     <h2>API RESPONCE</h2>
+                    <ul className='mainList'>
+                        <li> <DefBlock defs={ meanings } /> </li>
 
-                    <ul>
-
-                        <li>
-                            <ul>
-                                {meanings.map((entry, index) => (
-                                    <div key={index}>
-                                        <h3> {entry.partOfSpeech} </h3>
-                                        <ul>
-                                            {entry.definitions.map((def, dex) => (
-                                                <li key={dex} > {def.definition} </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </ul>
-                        </li>
-
-                        <li> 
-                            { phonetics[0].text } 
-                        </li>
+                        <li> { phonetics[0].text } </li>
                         
-                        <li>
-                            <audio controls>
-                                <source src={phonetics[0].audio} type='audio/mpeg' ></source>
-                                Your browser does not support the audio element.
-                            </audio>
-                        </li>
-
+                        <li> <AudioBlock source={ `${phonetics[0].audio}` }/> </li>
                     </ul>
-                </>
+                </div>
             )}
-
         </>
     );
 
