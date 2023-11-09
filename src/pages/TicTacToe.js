@@ -3,7 +3,7 @@ function TicTacToe()
 {
     return (
         <>
-            <h1>TicTacToe</h1>
+            <h1 class="pageHeader"> TIC-TAC-TOE </h1>
         </>
     );
 }
